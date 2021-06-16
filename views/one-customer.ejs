@@ -1,0 +1,9 @@
+<%- layout('./layouts/boilerplates') %>
+<div>
+  <h1>Hello sir, <%= customer.name %></h1>
+  <h3>Email: <%= customer.email %></h3>
+  <h3>A/c: <%= customer.accountNumber %></h3>
+
+  <h3>Current Balance: <%= customer.currentBalance %></h3>
+  <a href="/show/<%=customer._id%>/transfer_money">Transfer Money</a>
+</div>

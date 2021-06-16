@@ -1,0 +1,37 @@
+<%- layout('./layouts/boilerplates') %>
+<div>
+  <h4>Transfer Money from your account to other account</h4>
+  <form action="/show/<%= customer._id %>?_method=PUT" method="POST">
+    <div>
+      <p>Sender Detail</p>
+      <div>
+        <label for="senderAccount">Account Number</label>
+        <select name="senderAccount" id="senderAccount">
+          <option value="<%= customer.accountNumber %>">
+            <%= customer.accountNumber %>
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="amount">Amount</label>
+        <input type="number" name="amount" id="amount" min="1" max="50001" />
+      </div>
+    </div>
+    <div>
+      <p>Reciever Detail</p>
+      <div>
+        <label for="reciever">Account Number</label>
+        <select name="accountNumber" id="reciever">
+          <option value="">Select Reciever Account</option>
+          <% for(let transfer of transCustomer) {%>
+          <%if(customer.accountNumber===transfer.accountNumber) {%> <%}else{%>
+          <option value="<%= transfer.accountNumber %> ">
+            <%= transfer.accountNumber %>
+          </option>
+          <% } %> <% } %>
+        </select>
+      </div>
+    </div>
+    <button>Submit</button>
+  </form>
+</div>

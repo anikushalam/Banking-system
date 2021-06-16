@@ -1,0 +1,28 @@
+<%- layout('./layouts/boilerplates') %>
+<div>
+  <h1>All Customers List ....</h1>
+  <table>
+    <thead>
+      <tr>
+        <td>S.N</td>
+        <td>Name</td>
+        <td>Email</td>
+        <td>Balance</td>
+        <td>Select customer</td>
+      </tr>
+    </thead>
+    <tbody>
+      <ul>
+        <% for(let customer of customers) {%>
+        <tr>
+          <td><%= i++ %></td>
+          <td><%= customer.name %></td>
+          <td><%= customer.email %></td>
+          <td><%= customer.currentBalance %></td>
+          <td><a href="show/<%=customer._id %>">View customer</a></td>
+        </tr>
+        <% } %>
+      </ul>
+    </tbody>
+  </table>
+</div>
