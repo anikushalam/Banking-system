@@ -17,6 +17,7 @@ const customerSchema = new schema({
   currentBalance: {
     type: Number,
     required: true,
+    min: 0,
   },
 });
 

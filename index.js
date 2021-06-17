@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 const express = require("express");
 const app = express();
 const ejsMate = require("ejs-mate");
@@ -9,22 +10,16 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const AllCustomer = require("./models/allCustomer");
 const History = require("./models/history");
-const moment = require("moment");
+
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-//for method override
 app.use(methodOverride("_method"));
-
-// for handle the data which comes by the site
-// that means req.body parse in console
 app.use(express.urlencoded({ extended: true }));
-// app.locals.moment = require("moment");
-
 app.use(express.static(path.join(__dirname, "public")));
-// process.env.DB_URL ||
-dbUrl = "mongodb://localhost:27017/allCustomer";
+
+dbUrl = process.env.DB_URL;
+
 mongoose
   .connect(dbUrl, {
     useNewUrlParser: true,
@@ -47,14 +42,18 @@ app.get("/", async (req, res) => {
 app.get("/banking", async (req, res) => {
   const customers = await AllCustomer.find({});
   let i = 1;
-  //   console.log(customers);
   res.render("all-customer", { customers, i });
+});
+
+app.get("/banking/transaction-history", async (req, res) => {
+  const histories = await History.find({});
+  i = 1;
+  res.render("history-table", { histories, i });
 });
 
 app.get("/banking/:id", async (req, res) => {
   const { id } = req.params;
   const customer = await AllCustomer.findById(id);
-  //   console.log(customer);
   res.render("one-customer", { customer });
 });
 
@@ -66,14 +65,9 @@ app.get("/banking/:id/transfer_money", async (req, res) => {
 });
 
 app.put("/banking/:id", async (req, res) => {
-  //   console.log(req.body);
-  //   console.log(req.params);
-  //   console.log(req.body.recieverAccount);
   const { id } = req.params;
   const amount = parseInt(req.body.amount);
   const customerAmount = await AllCustomer.findById(id);
-  const senderAccount = customerAmount.accountNumber;
-  const senderName = customerAmount.name;
   const currentBalance = customerAmount.currentBalance - amount;
   const customer = await AllCustomer.findByIdAndUpdate(
     id,
@@ -91,9 +85,8 @@ app.put("/banking/:id", async (req, res) => {
 
   const recieverId = reciever[0]._id;
   const recieverAmount = await AllCustomer.findById({ _id: recieverId });
-  const recieverName = recieverAmount.name;
-  const recieverAccount = recieverAmount.accountNumber;
   const recieverCurrentBalance = recieverAmount.currentBalance + amount;
+
   await AllCustomer.findByIdAndUpdate(
     { _id: recieverId },
     { currentBalance: recieverCurrentBalance },
@@ -103,8 +96,12 @@ app.put("/banking/:id", async (req, res) => {
     }
   );
 
+  const senderAccount = customerAmount.accountNumber;
+  const senderName = customerAmount.name;
+  const recieverName = recieverAmount.name;
+  const recieverAccount = recieverAmount.accountNumber;
   const storedata = new History({
-    createdDate: moment(histories.createdDate).fromNow(),
+    createdDate: Date.now(),
     amount: amount,
     senderAccount: senderAccount,
     senderName: senderName,
@@ -116,7 +113,7 @@ app.put("/banking/:id", async (req, res) => {
 });
 
 app.all("*", (req, res) => {
-  res.send("Oh No page found");
+  res.send("Oh No page found !!");
 });
 
 const port = process.env.PORT || 8080;

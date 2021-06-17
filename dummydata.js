@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 const mongoose = require("mongoose");
 const AllCustomer = require("./models/allCustomer");
 
-dbUrl = process.env.DB_URL || "mongodb://localhost:27017/allCustomer";
+dbUrl = process.env.DB_URL;
 
 mongoose
   .connect(dbUrl, {
@@ -30,55 +30,55 @@ const customers = [
     name: "Guha",
     email: "guha@gmail.com",
     accountNumber: 12346278723,
-    currentBalance: 100000,
+    currentBalance: 90000,
   },
   {
     name: "Trgarian",
     email: "tigarian@gmail.com",
     accountNumber: 12346252721,
-    currentBalance: 100000,
+    currentBalance: 880000,
   },
   {
     name: "Curly",
     email: "curly@gmail.com",
     accountNumber: 20346278721,
-    currentBalance: 100000,
+    currentBalance: 50000,
   },
   {
     name: "Sonrli",
     email: "sonrli@gmail.com",
     accountNumber: 12776278721,
-    currentBalance: 100000,
+    currentBalance: 64000,
   },
   {
     name: "Merry",
     email: "merry@gmail.com",
     accountNumber: 12346279021,
-    currentBalance: 100000,
+    currentBalance: 74000,
   },
   {
     name: "Dau",
     email: "dau@gmail.com",
     accountNumber: 12346008721,
-    currentBalance: 100000,
+    currentBalance: 34000,
   },
   {
     name: "Soni",
     email: "soni@gmail.com",
     accountNumber: 45134627872,
-    currentBalance: 100000,
+    currentBalance: 49000,
   },
   {
     name: "Mohan",
     email: "mohan@gmail.com",
     accountNumber: 12382478721,
-    currentBalance: 100000,
+    currentBalance: 57000,
   },
   {
     name: "Savi",
     email: "savi@gmail.com",
     accountNumber: 30346278721,
-    currentBalance: 100000,
+    currentBalance: 79000,
   },
 ];
 

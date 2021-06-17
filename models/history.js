@@ -25,12 +25,6 @@ const historySchema = new Schema({
     type: String,
     required: true,
   },
-  //   customerHistory: [
-  //     {
-  //       type: Schema.Types.ObjectId,
-  //       ref: "AllCustomer",
-  //     },
-  //   ],
 });
 
 const History = mongoose.model("History", historySchema);
