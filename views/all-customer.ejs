@@ -1,25 +1,29 @@
 <%- layout('./layouts/boilerplates') %>
-<div>
-  <h1>All Customers List ....</h1>
-  <table>
+<div class="all-customer">
+  <h1 class="text-white mb-0">List of all customers</h1>
+  <table class="table table-dark table-borderless">
     <thead>
-      <tr>
-        <td>S.N</td>
-        <td>Name</td>
-        <td>Email</td>
-        <td>Balance</td>
-        <td>Select customer</td>
+      <tr class="border-tr">
+        <td scope="col">S.N</td>
+        <td scope="col">Name</td>
+        <td scope="col">Email</td>
+        <td scope="col">Balance</td>
+        <td scope="col">Select customer</td>
       </tr>
     </thead>
     <tbody>
       <ul>
         <% for(let customer of customers) {%>
         <tr>
-          <td><%= i++ %></td>
+          <td scope="row"><%= i++ %></td>
           <td><%= customer.name %></td>
           <td><%= customer.email %></td>
           <td><%= customer.currentBalance %></td>
-          <td><a href="show/<%=customer._id %>">View customer</a></td>
+          <td>
+            <a href="banking/<%=customer._id %>" class="btn btn-info btn-sm"
+              >View customer</a
+            >
+          </td>
         </tr>
         <% } %>
       </ul>

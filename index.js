@@ -22,12 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-dbUrl = process.env.DB_URL;
+// process.env.DB_URL ||
+dbUrl = "mongodb://localhost:27017/allCustomer";
 mongoose
   .connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
+    useCreateIndex: true,
   })
   .then(() => {
     console.log("We are Connected DataBase Successfully....");
@@ -41,34 +43,34 @@ app.get("/", async (req, res) => {
   res.render("home");
 });
 
-app.get("/show", async (req, res) => {
+app.get("/banking", async (req, res) => {
   const customers = await AllCustomer.find({});
   let i = 1;
   //   console.log(customers);
   res.render("all-customer", { customers, i });
 });
 
-app.get("/show/:id", async (req, res) => {
+app.get("/banking/:id", async (req, res) => {
   const { id } = req.params;
   const customer = await AllCustomer.findById(id);
   //   console.log(customer);
   res.render("one-customer", { customer });
 });
 
-app.get("/show/:id/transfer_money", async (req, res) => {
+app.get("/banking/:id/transfer_money", async (req, res) => {
   const { id } = req.params;
   const customer = await AllCustomer.findById(id);
   const transCustomer = await AllCustomer.find({});
   res.render("transfer", { transCustomer, customer });
 });
-app.put("/show/:id", async (req, res) => {
+app.put("/banking/:id", async (req, res) => {
   //   console.log(req.body);
   //   console.log(req.params);
   //   console.log(req.body.recieverAccount);
   const { id } = req.params;
-  const amount = req.body.amount;
+  const amount = parseInt(req.body.amount);
   const customerAmount = await AllCustomer.findById(id);
-  let currentBalance = customerAmount.currentBalance - amount;
+  const currentBalance = customerAmount.currentBalance - amount;
   //   //   console.log(currentBalance);
   const customer = await AllCustomer.findByIdAndUpdate(
     id,
@@ -81,17 +83,23 @@ app.put("/show/:id", async (req, res) => {
   const { accountNumber } = req.body;
   console.log(accountNumber);
   console.log("By DATA BASE......");
-  const reciever = await AllCustomer.find({});
-  //   currentBalance = reciever.currentBalance + amount;
-  for (let rec of reciever) {
-    if (rec.accountNumber == Number) {
-      console.log(rec.accountNumber);
-    } else {
-      console.log(rec.accountNumber);
-      console.log("bye.....");
+  const accountNumberParse = parseInt(accountNumber);
+  const reciever = await AllCustomer.find({
+    accountNumber: accountNumberParse,
+  });
+
+  const recieverId = reciever[0]._id;
+  const recieverAmount = await AllCustomer.findById({ _id: recieverId });
+  const recieverCurrentBalance = recieverAmount.currentBalance + amount;
+  await AllCustomer.findByIdAndUpdate(
+    { _id: recieverId },
+    { currentBalance: recieverCurrentBalance },
+    {
+      runValidators: true,
+      new: true,
     }
-  }
-  res.redirect(`/show/${customer._id}`);
+  );
+  res.redirect(`/banking/${customer._id}`);
 });
 
 app.all("*", (req, res) => {
