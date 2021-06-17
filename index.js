@@ -8,7 +8,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const AllCustomer = require("./models/allCustomer");
-
+const History = require("./models/history");
+const moment = require("moment");
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -19,10 +20,11 @@ app.use(methodOverride("_method"));
 // for handle the data which comes by the site
 // that means req.body parse in console
 app.use(express.urlencoded({ extended: true }));
+// app.locals.moment = require("moment");
 
 app.use(express.static(path.join(__dirname, "public")));
-
-dbUrl = process.env.DB_URL || "mongodb://localhost:27017/allCustomer";
+// process.env.DB_URL ||
+dbUrl = "mongodb://localhost:27017/allCustomer";
 mongoose
   .connect(dbUrl, {
     useNewUrlParser: true,
@@ -62,6 +64,7 @@ app.get("/banking/:id/transfer_money", async (req, res) => {
   const transCustomer = await AllCustomer.find({});
   res.render("transfer", { transCustomer, customer });
 });
+
 app.put("/banking/:id", async (req, res) => {
   //   console.log(req.body);
   //   console.log(req.params);
@@ -69,8 +72,9 @@ app.put("/banking/:id", async (req, res) => {
   const { id } = req.params;
   const amount = parseInt(req.body.amount);
   const customerAmount = await AllCustomer.findById(id);
+  const senderAccount = customerAmount.accountNumber;
+  const senderName = customerAmount.name;
   const currentBalance = customerAmount.currentBalance - amount;
-  //   //   console.log(currentBalance);
   const customer = await AllCustomer.findByIdAndUpdate(
     id,
     { currentBalance },
@@ -80,8 +84,6 @@ app.put("/banking/:id", async (req, res) => {
     }
   );
   const { accountNumber } = req.body;
-  console.log(accountNumber);
-  console.log("By DATA BASE......");
   const accountNumberParse = parseInt(accountNumber);
   const reciever = await AllCustomer.find({
     accountNumber: accountNumberParse,
@@ -89,6 +91,8 @@ app.put("/banking/:id", async (req, res) => {
 
   const recieverId = reciever[0]._id;
   const recieverAmount = await AllCustomer.findById({ _id: recieverId });
+  const recieverName = recieverAmount.name;
+  const recieverAccount = recieverAmount.accountNumber;
   const recieverCurrentBalance = recieverAmount.currentBalance + amount;
   await AllCustomer.findByIdAndUpdate(
     { _id: recieverId },
@@ -98,6 +102,16 @@ app.put("/banking/:id", async (req, res) => {
       new: true,
     }
   );
+
+  const storedata = new History({
+    createdDate: moment(histories.createdDate).fromNow(),
+    amount: amount,
+    senderAccount: senderAccount,
+    senderName: senderName,
+    recieverAccount: recieverAccount,
+    recieverName: recieverName,
+  });
+  await storedata.save();
   res.redirect(`/banking/${customer._id}`);
 });
 
