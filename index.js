@@ -22,8 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// process.env.DB_URL ||
-dbUrl = "mongodb://localhost:27017/allCustomer";
+dbUrl = process.env.DB_URL || "mongodb://localhost:27017/allCustomer";
 mongoose
   .connect(dbUrl, {
     useNewUrlParser: true,
